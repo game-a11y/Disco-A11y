@@ -267,7 +267,7 @@ namespace AccessibilityMod.UI
                             string effects = !string.IsNullOrEmpty(mechanicalEffects)
                                 ? $" - {effectsLabel}: {mechanicalEffects}"
                                 : "";
-                            return $"Equipped thought: {project.displayName}{effects}";
+                            return $"Equipped thought: {RTLHelper.FixForScreenReader(project.displayName)}{effects}";
                         }
                         else
                         {
@@ -324,7 +324,7 @@ namespace AccessibilityMod.UI
                     string effects = !string.IsNullOrEmpty(mechanicalEffects)
                         ? $" - {effectsLabel}: {mechanicalEffects}"
                         : "";
-                    return $"Thought: {project.displayName}{effects}";
+                    return $"Thought: {RTLHelper.FixForScreenReader(project.displayName)}{effects}";
                 }
                 else
                 {
@@ -365,7 +365,7 @@ namespace AccessibilityMod.UI
                 if (project != null)
                 {
                     // Get thought name
-                    string thoughtName = project.displayName;
+                    string thoughtName = RTLHelper.FixForScreenReader(project.displayName);
                     if (string.IsNullOrEmpty(thoughtName))
                     {
                         thoughtName = "Unknown Thought";
@@ -376,7 +376,7 @@ namespace AccessibilityMod.UI
                     string stateDesc = GetThoughtStateDescription(state.ToString());
 
                     // Get thought description
-                    string description = project.description;
+                    string description = RTLHelper.FixForScreenReader(project.description);
 
                     // Build announcement like inventory does
                     announcement = $"Thought: {thoughtName}";
@@ -433,7 +433,7 @@ namespace AccessibilityMod.UI
                         && !string.IsNullOrEmpty(project.completionDescription)
                     )
                     {
-                        announcement += $"\n- Solution: {project.completionDescription}";
+                        announcement += $"\n- Solution: {RTLHelper.FixForScreenReader(project.completionDescription)}";
                     }
                 }
                 else
@@ -467,10 +467,10 @@ namespace AccessibilityMod.UI
                 if (project != null)
                 {
                     // Get thought name
-                    string thoughtName = project.displayName;
+                    string thoughtName = RTLHelper.FixForScreenReader(project.displayName);
                     if (string.IsNullOrEmpty(thoughtName))
                     {
-                        thoughtName = thoughtListItem.name; // Fallback to ThoughtListItem name
+                        thoughtName = RTLHelper.FixForScreenReader(thoughtListItem.name); // Fallback to ThoughtListItem name
                     }
                     if (string.IsNullOrEmpty(thoughtName))
                     {
@@ -482,7 +482,7 @@ namespace AccessibilityMod.UI
                     string stateDesc = GetThoughtStateDescription(state.ToString());
 
                     // Get thought description
-                    string description = project.description;
+                    string description = RTLHelper.FixForScreenReader(project.description);
 
                     // Build announcement like inventory does
                     announcement = $"Thought: {thoughtName}";
@@ -631,7 +631,7 @@ namespace AccessibilityMod.UI
                 {
                     if (textComp != null && !string.IsNullOrEmpty(textComp.text))
                     {
-                        string text = textComp.text.Trim();
+                        string text = RTLHelper.FixForScreenReader(textComp.text.Trim());
                         // Look for longer text that might be descriptions
                         if (text.Length > 50 && text.Contains(" "))
                         {
@@ -823,7 +823,7 @@ namespace AccessibilityMod.UI
                                 && textComp.gameObject.name == "PropertiesText"
                             )
                             {
-                                string text = textComp.text;
+                                string text = RTLHelper.FixForScreenReader(textComp.text);
 
                                 // Parse the properties text which contains lines like:
                                 // "+2 Volition: Magnesium receptacle glands"
@@ -900,7 +900,7 @@ namespace AccessibilityMod.UI
                     {
                         if (textComp != null && !string.IsNullOrEmpty(textComp.text))
                         {
-                            string text = textComp.text.Trim();
+                            string text = RTLHelper.FixForScreenReader(textComp.text.Trim());
                             if (
                                 text.Length > 5
                                 && !text.StartsWith("+")
@@ -934,7 +934,7 @@ namespace AccessibilityMod.UI
                     return null;
 
                 // Use the game's own EffectName method - this gives us the mechanical effect
-                string effectName = effect.EffectName(false, false, false, true);
+                string effectName = RTLHelper.FixForScreenReader(effect.EffectName(false, false, false, true));
 
                 // Filter out empty, null, or technical effects
                 if (
@@ -958,7 +958,7 @@ namespace AccessibilityMod.UI
                 // Fallback to EffectFullName if EffectName fails
                 try
                 {
-                    string fullName = effect.EffectFullName();
+                    string fullName = RTLHelper.FixForScreenReader(effect.EffectFullName());
                     if (!string.IsNullOrEmpty(fullName) && !fullName.Contains("LUA_"))
                     {
                         return fullName.Trim();

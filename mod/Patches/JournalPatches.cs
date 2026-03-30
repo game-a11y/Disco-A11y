@@ -5,6 +5,7 @@ using Il2CppSunshine.Journal;
 using Il2CppPages.Gameplay.Journal;
 using UnityEngine.EventSystems;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Patches
 {
@@ -135,10 +136,10 @@ namespace AccessibilityMod.Patches
             {
                 if (__instance == null) return;
                 
-                string taskName = __instance.LocalizedName;
+                string taskName = RTLHelper.FixForScreenReader(__instance.LocalizedName);
                 if (string.IsNullOrEmpty(taskName))
                 {
-                    taskName = __instance.Name;
+                    taskName = RTLHelper.FixForScreenReader(__instance.Name);
                 }
                 
                 if (!string.IsNullOrEmpty(taskName))
@@ -163,10 +164,10 @@ namespace AccessibilityMod.Patches
             {
                 if (__instance == null || !__result) return;
                 
-                string taskName = __instance.LocalizedName;
+                string taskName = RTLHelper.FixForScreenReader(__instance.LocalizedName);
                 if (string.IsNullOrEmpty(taskName))
                 {
-                    taskName = __instance.Name;
+                    taskName = RTLHelper.FixForScreenReader(__instance.Name);
                 }
                 
                 if (!string.IsNullOrEmpty(taskName))
@@ -191,10 +192,10 @@ namespace AccessibilityMod.Patches
             {
                 if (__instance == null) return;
                 
-                string taskName = __instance.LocalizedName;
+                string taskName = RTLHelper.FixForScreenReader(__instance.LocalizedName);
                 if (string.IsNullOrEmpty(taskName))
                 {
-                    taskName = __instance.Name;
+                    taskName = RTLHelper.FixForScreenReader(__instance.Name);
                 }
                 
                 if (!string.IsNullOrEmpty(taskName))

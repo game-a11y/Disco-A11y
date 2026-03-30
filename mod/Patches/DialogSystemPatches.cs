@@ -5,6 +5,7 @@ using Il2CppPixelCrushers.DialogueSystem;
 using Il2CppSunshine;
 using MelonLoader;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Patches
 {
@@ -47,8 +48,9 @@ namespace AccessibilityMod.Patches
                     if (entry == null) return;
 
                     // Get localized dialog text and speaker name from FinalEntry
-                    string dialogText = entry.spokenLine ?? "";
-                    string speakerName = entry.speakerName ?? "";
+                    // Apply RTL fix — I2 Localization reverses all Arabic text, including dialogue data
+                    string dialogText = RTLHelper.FixForScreenReader(entry.spokenLine ?? "");
+                    string speakerName = RTLHelper.FixForScreenReader(entry.speakerName ?? "");
 
                     // Skip if no text to speak
                     if (string.IsNullOrEmpty(dialogText))

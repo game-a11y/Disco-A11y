@@ -104,6 +104,8 @@ namespace AccessibilityMod
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             LoggerInstance.Msg($"Scene loaded: {sceneName} (Index: {buildIndex})");
+            // Re-detect RTL on scene load in case language changed in settings
+            Utils.RTLHelper.ClearCache();
         }
         
         public override void OnUpdate()

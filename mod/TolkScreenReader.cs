@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using AccessibilityMod.Settings;
 using AccessibilityMod.Audio;
@@ -110,12 +111,48 @@ namespace AccessibilityMod
             return SendSpeech(text, interrupt, true, category, source);
         }
 
+        // Enable to log Unicode code points of text sent to the screen reader
+        public bool DiagnosticLogging = false;
+
+        private void LogSpeechDiagnostics(string text)
+        {
+            if (!DiagnosticLogging || string.IsNullOrEmpty(text)) return;
+
+            var sb = new StringBuilder();
+            sb.Append($"[SPEECH-DIAG] Len={text.Length} Text=\"{text}\" FirstCodePoints=[");
+            int limit = Math.Min(text.Length, 20);
+            for (int i = 0; i < limit; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                sb.Append($"U+{(int)text[i]:X4}");
+            }
+            if (text.Length > limit) sb.Append(", ...");
+            sb.Append("]");
+
+            // Check if any characters are in Arabic Unicode blocks (U+0600-U+06FF, U+0750-U+077F, U+FB50-U+FDFF, U+FE70-U+FEFF)
+            bool hasArabic = false;
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                if ((c >= 0x0600 && c <= 0x06FF) || (c >= 0x0750 && c <= 0x077F) ||
+                    (c >= 0xFB50 && c <= 0xFDFF) || (c >= 0xFE70 && c <= 0xFEFF))
+                {
+                    hasArabic = true;
+                    break;
+                }
+            }
+            sb.Append(hasArabic ? " [ARABIC DETECTED]" : " [NO ARABIC CHARS]");
+
+            MelonLogger.Msg(sb.ToString());
+        }
+
         private bool SendSpeech(string text, bool interrupt, bool respectSuppression, AnnouncementCategory category = AnnouncementCategory.Immediate, Audio.AnnouncementSource source = Audio.AnnouncementSource.Other)
         {
             if (!isInitialized || string.IsNullOrEmpty(text)) return false;
             if (respectSuppression && suppressAnnouncements) return false;
 
             text = StripHtmlTags(text);
+            LogSpeechDiagnostics(text);
 
             // Route based on announcement category
             if (category == AnnouncementCategory.Queueable)

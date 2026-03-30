@@ -145,10 +145,11 @@ namespace AccessibilityMod.UI
                     var skillType = skillPanel.skill;
 
                     // Get the localized skill name
-                    string skillName = Il2CppSunshine.Metric.Skill.SkillTypeToLocalizedName(
-                        skillType,
-                        true
-                    );
+                    string skillName = RTLHelper.FixForScreenReader(
+                        Il2CppSunshine.Metric.Skill.SkillTypeToLocalizedName(
+                            skillType,
+                            true
+                        ));
 
                     // Check if we're in gameplay (not character creation)
                     // In gameplay, we want rich tooltip information
@@ -485,7 +486,7 @@ namespace AccessibilityMod.UI
             {
                 if (TryGetSkillTypeFromName(skillName, out SkillType skillType))
                 {
-                    return Skill.SkillTypeToLocalizedName(skillType, true);
+                    return RTLHelper.FixForScreenReader(Skill.SkillTypeToLocalizedName(skillType, true));
                 }
                 return null;
             }
@@ -845,7 +846,7 @@ namespace AccessibilityMod.UI
                             archetypeButton.nameLocalization.GetComponent<TextMeshProUGUI>();
                         if (nameText != null && !string.IsNullOrEmpty(nameText.text))
                         {
-                            archetypeName = nameText.text.Trim();
+                            archetypeName = RTLHelper.FixForScreenReader(nameText.text.Trim());
                         }
                     }
                 }
@@ -863,7 +864,7 @@ namespace AccessibilityMod.UI
                             archetypeButton.descriptionLocalization.GetComponent<TextMeshProUGUI>();
                         if (descText != null && !string.IsNullOrEmpty(descText.text))
                         {
-                            description = descText.text.Trim();
+                            description = RTLHelper.FixForScreenReader(descText.text.Trim());
                         }
                     }
                 }
@@ -881,7 +882,7 @@ namespace AccessibilityMod.UI
                             archetypeButton.signatureSkillLocalization.GetComponent<TextMeshProUGUI>();
                         if (skillText != null && !string.IsNullOrEmpty(skillText.text))
                         {
-                            signatureSkill = skillText.text.Trim();
+                            signatureSkill = RTLHelper.FixForScreenReader(skillText.text.Trim());
                         }
                     }
                 }

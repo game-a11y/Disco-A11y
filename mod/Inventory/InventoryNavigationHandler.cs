@@ -9,6 +9,7 @@ using Il2CppSunshine.Views;
 using Il2CppPages.Gameplay.Inventory;
 using Il2Cpp;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Inventory
 {
@@ -389,7 +390,7 @@ namespace AccessibilityMod.Inventory
                     return null;
 
                 // Use the game's own EffectName method to get the formatted effect string
-                string effectName = effect.EffectName(false, false, false, true);
+                string effectName = RTLHelper.FixForScreenReader(effect.EffectName(false, false, false, true));
 
                 // Filter out empty, null, or technical effects
                 if (

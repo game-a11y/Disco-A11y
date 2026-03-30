@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Il2CppTMPro;
+using AccessibilityMod.Utils;
 using MelonLoader;
 
 namespace AccessibilityMod.UI
@@ -13,6 +15,41 @@ namespace AccessibilityMod.UI
     /// </summary>
     public static class TextExtractor
     {
+        // Enable via MelonLoader console or set to true to diagnose encoding issues
+        public static bool DiagnosticLogging = false;
+
+        /// <summary>
+        /// Log Unicode code points for the first N characters of a string, to diagnose encoding issues.
+        /// Enable by setting TextExtractor.DiagnosticLogging = true.
+        /// </summary>
+        private static void LogStringDiagnostics(string text, string source)
+        {
+            if (!DiagnosticLogging || string.IsNullOrEmpty(text)) return;
+
+            var sb = new StringBuilder();
+            sb.Append($"[TEXT-DIAG] Source={source} Len={text.Length} Text=\"{text}\" CodePoints=[");
+            int limit = Math.Min(text.Length, 20);
+            for (int i = 0; i < limit; i++)
+            {
+                if (i > 0) sb.Append(", ");
+                sb.Append($"U+{(int)text[i]:X4}");
+            }
+            if (text.Length > limit) sb.Append(", ...");
+            sb.Append("]");
+
+            // Flag if text contains characters that suggest encoding corruption
+            bool hasNonBmpSubstitution = false;
+            for (int i = 0; i < text.Length; i++)
+            {
+                // Check for common mojibake patterns: Latin chars where Arabic expected
+                if (text[i] >= 0x00C0 && text[i] <= 0x00FF) hasNonBmpSubstitution = true;
+            }
+            if (hasNonBmpSubstitution)
+                sb.Append(" WARNING: Contains Latin Extended chars (possible UTF-8 misinterpreted as Latin-1)");
+
+            MelonLogger.Msg(sb.ToString());
+        }
+
         /// <summary>
         /// Extract the best text content from a GameObject, checking multiple text component types
         /// </summary>
@@ -21,46 +58,68 @@ namespace AccessibilityMod.UI
             try
             {
                 if (uiObject == null) return null;
-                
+
+                string result = null;
+
                 // Try direct text components first
                 var textComponent = uiObject.GetComponent<Text>();
                 if (textComponent != null && !string.IsNullOrEmpty(textComponent.text))
                 {
-                    return textComponent.text.Trim();
+                    result = textComponent.text.Trim();
+                    LogStringDiagnostics(result, $"Text@{uiObject.name}");
                 }
-                
-                var tmpText = uiObject.GetComponent<TextMeshProUGUI>();
-                if (tmpText != null && !string.IsNullOrEmpty(tmpText.text))
+                else
                 {
-                    return tmpText.text.Trim();
+                    var tmpText = uiObject.GetComponent<TextMeshProUGUI>();
+                    if (tmpText != null && !string.IsNullOrEmpty(tmpText.text))
+                    {
+                        result = tmpText.text.Trim();
+                        LogStringDiagnostics(result, $"TMP_UGUI@{uiObject.name}");
+                    }
+                    else
+                    {
+                        var tmpTextPro = uiObject.GetComponent<TextMeshPro>();
+                        if (tmpTextPro != null && !string.IsNullOrEmpty(tmpTextPro.text))
+                        {
+                            result = tmpTextPro.text.Trim();
+                            LogStringDiagnostics(result, $"TMP_Pro@{uiObject.name}");
+                        }
+                    }
                 }
-                
-                var tmpTextPro = uiObject.GetComponent<TextMeshPro>();
-                if (tmpTextPro != null && !string.IsNullOrEmpty(tmpTextPro.text))
+
+                // Try child text components if direct ones failed
+                if (result == null)
                 {
-                    return tmpTextPro.text.Trim();
+                    var childText = uiObject.GetComponentInChildren<Text>();
+                    if (childText != null && !string.IsNullOrEmpty(childText.text))
+                    {
+                        result = childText.text.Trim();
+                        LogStringDiagnostics(result, $"ChildText@{uiObject.name}");
+                    }
+                    else
+                    {
+                        var childTMP = uiObject.GetComponentInChildren<TextMeshProUGUI>();
+                        if (childTMP != null && !string.IsNullOrEmpty(childTMP.text))
+                        {
+                            result = childTMP.text.Trim();
+                            LogStringDiagnostics(result, $"ChildTMP@{uiObject.name}");
+                        }
+                        else
+                        {
+                            var childTMPPro = uiObject.GetComponentInChildren<TextMeshPro>();
+                            if (childTMPPro != null && !string.IsNullOrEmpty(childTMPPro.text))
+                            {
+                                result = childTMPPro.text.Trim();
+                                LogStringDiagnostics(result, $"ChildTMPPro@{uiObject.name}");
+                            }
+                        }
+                    }
                 }
-                
-                // Try child text components (for buttons, etc.)
-                var childText = uiObject.GetComponentInChildren<Text>();
-                if (childText != null && !string.IsNullOrEmpty(childText.text))
-                {
-                    return childText.text.Trim();
-                }
-                
-                var childTMP = uiObject.GetComponentInChildren<TextMeshProUGUI>();
-                if (childTMP != null && !string.IsNullOrEmpty(childTMP.text))
-                {
-                    return childTMP.text.Trim();
-                }
-                
-                var childTMPPro = uiObject.GetComponentInChildren<TextMeshPro>();
-                if (childTMPPro != null && !string.IsNullOrEmpty(childTMPPro.text))
-                {
-                    return childTMPPro.text.Trim();
-                }
-                
-                return null;
+
+                // Fix RTL text that was reversed by I2 Localization for visual display.
+                // FixForScreenReader auto-detects whether text needs reversal by examining
+                // Arabic presentation form characters — no external flags needed.
+                return RTLHelper.FixForScreenReader(result);
             }
             catch (Exception ex)
             {
@@ -111,10 +170,10 @@ namespace AccessibilityMod.UI
                     
                     if (!string.IsNullOrEmpty(text) && textValidator(text))
                     {
-                        return text.Trim();
+                        return RTLHelper.FixForScreenReader(text.Trim());
                     }
                 }
-                
+
                 return null;
             }
             catch (Exception ex)

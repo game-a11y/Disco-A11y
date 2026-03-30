@@ -6,6 +6,7 @@ using UnityEngine;
 using MelonLoader;
 using Il2CppTMPro;
 using AccessibilityMod.Settings;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Patches
 {
@@ -42,7 +43,7 @@ namespace AccessibilityMod.Patches
             if (!orbAnnouncementsEnabled || string.IsNullOrEmpty(text))
                 return;
 
-            string trimmedText = text.Trim();
+            string trimmedText = RTLHelper.FixForScreenReader(text.Trim());
             float currentTime = Time.time;
 
             // Check if this is a duplicate within the cooldown period

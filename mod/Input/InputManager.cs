@@ -158,6 +158,17 @@ namespace AccessibilityMod.Input
                 TolkScreenReader.Instance.ToggleGlobalInterrupt();
             }
 
+            // Toggle encoding diagnostic logging: Ctrl+9
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Alpha9) && ctrlHeld)
+            {
+                bool newState = !TextExtractor.DiagnosticLogging;
+                TextExtractor.DiagnosticLogging = newState;
+                TolkScreenReader.Instance.DiagnosticLogging = newState;
+                string status = newState ? "enabled" : "disabled";
+                TolkScreenReader.Instance.Speak($"Encoding diagnostics {status}", true);
+                MelonLogger.Msg($"[DIAG] Encoding diagnostic logging {status}");
+            }
+
             // Officer profile announcement: O key
             if (UnityEngine.Input.GetKeyDown(KeyCode.O))
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using Il2CppNotificationSystem;
+using AccessibilityMod.Utils;
 using MelonLoader;
 
 namespace AccessibilityMod.Patches
@@ -54,8 +55,8 @@ namespace AccessibilityMod.Patches
                 if (__instance != null && __instance._currentlyPlayedNotification != null)
                 {
                     var notification = __instance._currentlyPlayedNotification;
-                    string headerText = notification.HeaderText;
-                    string descriptionText = notification.DescriptionText;
+                    string headerText = RTLHelper.FixForScreenReader(notification.HeaderText);
+                    string descriptionText = RTLHelper.FixForScreenReader(notification.DescriptionText);
 
                     // Build notification text from available components
                     string notificationText = "";
@@ -121,8 +122,8 @@ namespace AccessibilityMod.Patches
                     }
 
                     // Build complete skill check text using CheckResult properties
-                    string skillName = __instance.SkillName();
-                    string difficulty = __instance.difficulty;
+                    string skillName = RTLHelper.FixForScreenReader(__instance.SkillName());
+                    string difficulty = RTLHelper.FixForScreenReader(__instance.difficulty);
                     bool isSuccess = __instance.IsSuccess;
 
                     // Clean the original result text by removing HTML tags

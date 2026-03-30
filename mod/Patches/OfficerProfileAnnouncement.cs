@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 using Il2Cpp;
 using Il2CppPages.Gameplay.Journal;
 using MelonLoader;
@@ -151,7 +152,7 @@ namespace AccessibilityMod.Patches
                         {
                             if (textComp != null && !string.IsNullOrEmpty(textComp.text))
                             {
-                                string text = textComp.text.Trim();
+                                string text = RTLHelper.FixForScreenReader(textComp.text.Trim());
                                 if (text.Length > 0)
                                 {
                                     sb.AppendLine($"{text}.");
@@ -175,8 +176,8 @@ namespace AccessibilityMod.Patches
                                 && line._valueText != null
                             )
                             {
-                                string desc = line._descriptionText.text?.Trim();
-                                string val = line._valueText.text?.Trim();
+                                string desc = RTLHelper.FixForScreenReader(line._descriptionText.text?.Trim());
+                                string val = RTLHelper.FixForScreenReader(line._valueText.text?.Trim());
 
                                 if (!string.IsNullOrEmpty(desc) && !string.IsNullOrEmpty(val))
                                 {
@@ -196,7 +197,7 @@ namespace AccessibilityMod.Patches
                             {
                                 if (textComp != null && !string.IsNullOrEmpty(textComp.text))
                                 {
-                                    string text = textComp.text.Trim();
+                                    string text = RTLHelper.FixForScreenReader(textComp.text.Trim());
                                     if (text.Length > 0)
                                     {
                                         textList.Add(text);

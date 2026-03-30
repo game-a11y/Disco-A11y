@@ -7,6 +7,7 @@ using Il2CppSunshine.Metric;
 using MelonLoader;
 using UnityEngine.EventSystems;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Patches
 {
@@ -148,7 +149,7 @@ namespace AccessibilityMod.Patches
                 // First, add the basic check text (actor and location)
                 if (titleText != null && !string.IsNullOrEmpty(titleText.text))
                 {
-                    string title = titleText.text.Trim();
+                    string title = RTLHelper.FixForScreenReader(titleText.text.Trim());
 
                     // Clean up any formatting tags
                     if (title.Contains("<"))
@@ -193,7 +194,7 @@ namespace AccessibilityMod.Patches
                 {
                     if (titleText != null && !string.IsNullOrEmpty(titleText.text))
                     {
-                        return titleText.text;
+                        return RTLHelper.FixForScreenReader(titleText.text);
                     }
                 }
                 catch { }

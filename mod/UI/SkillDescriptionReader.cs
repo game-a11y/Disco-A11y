@@ -52,10 +52,11 @@ namespace AccessibilityMod.UI
                 string skillName = "Unknown Skill";
                 try
                 {
-                    skillName = Il2CppSunshine.Metric.Skill.SkillTypeToLocalizedName(
-                        skillPanel.skill,
-                        true
-                    );
+                    skillName = Utils.RTLHelper.FixForScreenReader(
+                        Il2CppSunshine.Metric.Skill.SkillTypeToLocalizedName(
+                            skillPanel.skill,
+                            true
+                        ));
                 }
                 catch (Exception ex)
                 {
@@ -108,7 +109,8 @@ namespace AccessibilityMod.UI
                                     var infoTextComponent = infoTextObj.GetComponent<Il2CppTMPro.TextMeshProUGUI>();
                                     if (infoTextComponent != null && !string.IsNullOrEmpty(infoTextComponent.text))
                                     {
-                                        longDescription = infoTextComponent.text.Trim();
+                                        // Apply RTL fix line-by-line since I2 reverses each line independently
+                                        longDescription = Utils.RTLHelper.FixForScreenReader(infoTextComponent.text.Trim());
                                         MelonLogger.Msg($"[SKILL DESCRIPTION] Got description directly from InfoText ({longDescription.Length} chars)");
                                     }
                                 }
@@ -137,7 +139,7 @@ namespace AccessibilityMod.UI
                         {
                             if (textComponent != null && !string.IsNullOrEmpty(textComponent.text))
                             {
-                                string text = textComponent.text.Trim();
+                                string text = Utils.RTLHelper.FixForScreenReader(textComponent.text.Trim());
 
                                 // Skip if too short to be a description
                                 if (text.Length < 100)

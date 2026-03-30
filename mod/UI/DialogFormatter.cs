@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Il2Cpp;
 using Il2CppTMPro;
+using AccessibilityMod.Utils;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
@@ -68,12 +69,14 @@ namespace AccessibilityMod.UI
                         && !string.IsNullOrEmpty(responseButton.optionText.textField.text)
                     )
                     {
-                        dialogText = responseButton.optionText.textField.text.Trim();
+                        dialogText = RTLHelper.FixForScreenReader(
+                            responseButton.optionText.textField.text.Trim());
                     }
                     // Fallback to originalText property
                     else if (!string.IsNullOrEmpty(responseButton.optionText.originalText))
                     {
-                        dialogText = responseButton.optionText.originalText.Trim();
+                        // originalText is a string property, not TMP — assume I2-reversed
+                        dialogText = RTLHelper.FixForScreenReader(responseButton.optionText.originalText.Trim());
                     }
                 }
 
@@ -154,7 +157,7 @@ namespace AccessibilityMod.UI
                 var textComponent = uiObject.GetComponent<Text>();
                 if (textComponent != null && confirmationController.Text == textComponent)
                 {
-                    return $"Confirmation: {textComponent.text}";
+                    return $"Confirmation: {RTLHelper.FixForScreenReader(textComponent.text)}";
                 }
 
                 return null;
@@ -183,7 +186,7 @@ namespace AccessibilityMod.UI
                 string message = "";
                 if (confirmationController.Text != null)
                 {
-                    message = confirmationController.Text.text;
+                    message = RTLHelper.FixForScreenReader(confirmationController.Text.text);
                 }
 
                 // Check if this button is the Confirm button

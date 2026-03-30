@@ -226,7 +226,7 @@ namespace AccessibilityMod.UI
                 var details = new List<string>();
 
                 // Add display name
-                string displayName = thoughtProject.displayName;
+                string displayName = RTLHelper.FixForScreenReader(thoughtProject.displayName);
                 if (!string.IsNullOrEmpty(displayName))
                 {
                     details.Add($"Thought: {displayName}");
@@ -238,7 +238,7 @@ namespace AccessibilityMod.UI
                 details.Add($"Status: {stateDesc}");
 
                 // Add description
-                string description = thoughtProject.description;
+                string description = RTLHelper.FixForScreenReader(thoughtProject.description);
                 if (!string.IsNullOrEmpty(description))
                 {
                     details.Add($"Description: {description}");
@@ -263,7 +263,7 @@ namespace AccessibilityMod.UI
                 // Add completion description if available and relevant
                 if (state == ThoughtState.DISCOVERED || state == ThoughtState.FIXED)
                 {
-                    string completionDesc = thoughtProject.completionDescription;
+                    string completionDesc = RTLHelper.FixForScreenReader(thoughtProject.completionDescription);
                     if (!string.IsNullOrEmpty(completionDesc))
                     {
                         details.Add($"Effect: {completionDesc}");
@@ -475,7 +475,7 @@ namespace AccessibilityMod.UI
                     {
                         if (textComp != null && textComp.gameObject != thoughtObject && !string.IsNullOrEmpty(textComp.text))
                         {
-                            string text = textComp.text.Trim();
+                            string text = RTLHelper.FixForScreenReader(textComp.text.Trim());
                             if (text.Length > 30 && text.Contains(" "))
                             {
                                 return text;

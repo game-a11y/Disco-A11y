@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 using HarmonyLib;
 using Il2Cpp;
 using Il2CppSunshine;
@@ -123,11 +124,12 @@ namespace AccessibilityMod.Patches
                         // Get dialog text from the selected button
                         if (selectedButton.optionText?.textField?.text != null)
                         {
-                            dialogText = selectedButton.optionText.textField.text.Trim();
+                            dialogText = RTLHelper.FixForScreenReader(
+                                selectedButton.optionText.textField.text.Trim());
                         }
                         else if (selectedButton.optionText?.originalText != null)
                         {
-                            dialogText = selectedButton.optionText.originalText.Trim();
+                            dialogText = RTLHelper.FixForScreenReader(selectedButton.optionText.originalText.Trim());
                         }
                     }
                 }
@@ -179,8 +181,8 @@ namespace AccessibilityMod.Patches
             try
             {
                 // Get all the data we need
-                string skillName = check.SkillName();
-                string difficulty = check.difficulty;
+                string skillName = RTLHelper.FixForScreenReader(check.SkillName());
+                string difficulty = RTLHelper.FixForScreenReader(check.difficulty);
                 int targetNumber = check.TargetNumber();
                 float probability = check.Probability();
                 int percentChance = (int)(probability * 100);
@@ -215,7 +217,7 @@ namespace AccessibilityMod.Patches
                             int displayValue = -modifier.bonus;
                             string modValue =
                                 displayValue > 0 ? $"+{displayValue}" : displayValue.ToString();
-                            modifierText += $", {modValue} from {modifier.explanation}";
+                            modifierText += $", {modValue} from {RTLHelper.FixForScreenReader(modifier.explanation)}";
                         }
                     }
                 }
@@ -252,7 +254,7 @@ namespace AccessibilityMod.Patches
                 // Get title text
                 if (tooltip.titleText != null && !string.IsNullOrEmpty(tooltip.titleText.text))
                 {
-                    sb.Append(tooltip.titleText.text);
+                    sb.Append(RTLHelper.FixForScreenReader(tooltip.titleText.text));
                 }
 
                 // Get probability text
@@ -262,21 +264,21 @@ namespace AccessibilityMod.Patches
                 )
                 {
                     sb.Append(", ");
-                    sb.Append(tooltip.titleProbability.text);
+                    sb.Append(RTLHelper.FixForScreenReader(tooltip.titleProbability.text));
                 }
 
                 // Get results breakdown
                 if (tooltip.resultsBox != null && !string.IsNullOrEmpty(tooltip.resultsBox.text))
                 {
                     sb.Append(", Details: ");
-                    sb.Append(tooltip.resultsBox.text);
+                    sb.Append(RTLHelper.FixForScreenReader(tooltip.resultsBox.text));
                 }
 
                 // Get explanation if available
                 if (tooltip.explanation != null && !string.IsNullOrEmpty(tooltip.explanation.text))
                 {
                     sb.Append(", ");
-                    sb.Append(tooltip.explanation.text);
+                    sb.Append(RTLHelper.FixForScreenReader(tooltip.explanation.text));
                 }
             }
             catch (Exception ex)

@@ -4,6 +4,7 @@ using MelonLoader;
 using UnityEngine;
 using UnityEngine.UI;
 using AccessibilityMod.UI;
+using AccessibilityMod.Utils;
 
 namespace AccessibilityMod.Patches
 {
@@ -128,7 +129,7 @@ namespace AccessibilityMod.Patches
                             return;
                         }
 
-                        string announcement = $"Confirmation dialog: {__instance.Text.text}";
+                        string announcement = $"Confirmation dialog: {RTLHelper.FixForScreenReader(__instance.Text.text)}";
 
                         TolkScreenReader.Instance.Speak(announcement, true);
                         RecordAnnouncement(__instance.Text.text);
@@ -165,7 +166,7 @@ namespace AccessibilityMod.Patches
                             return;
                         }
 
-                        string announcement = $"Confirmation dialog: {__instance.Text.text}";
+                        string announcement = $"Confirmation dialog: {RTLHelper.FixForScreenReader(__instance.Text.text)}";
 
                         // Add button information
                         if (showCancel)

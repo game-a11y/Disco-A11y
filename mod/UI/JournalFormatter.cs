@@ -44,10 +44,10 @@ namespace AccessibilityMod.UI
                 var journalTask = task.TryCast<JournalTask>();
 
                 // Get task name
-                string taskName = task.LocalizedName;
+                string taskName = RTLHelper.FixForScreenReader(task.LocalizedName);
                 if (string.IsNullOrEmpty(taskName))
                 {
-                    taskName = task.Name;
+                    taskName = RTLHelper.FixForScreenReader(task.Name);
                 }
 
                 if (string.IsNullOrEmpty(taskName))
@@ -159,10 +159,10 @@ namespace AccessibilityMod.UI
                 }
                 
                 // Add description
-                string description = task.LocalizedDescription;
+                string description = RTLHelper.FixForScreenReader(task.LocalizedDescription);
                 if (string.IsNullOrEmpty(description))
                 {
-                    description = task.Description;
+                    description = RTLHelper.FixForScreenReader(task.Description);
                 }
 
                 if (!string.IsNullOrEmpty(description))
@@ -198,10 +198,10 @@ namespace AccessibilityMod.UI
                             {
                                 foreach (var activeSubtask in activeSubtasks)
                                 {
-                                    string subtaskName = activeSubtask.LocalizedName;
+                                    string subtaskName = RTLHelper.FixForScreenReader(activeSubtask.LocalizedName);
                                     if (string.IsNullOrEmpty(subtaskName))
                                     {
-                                        subtaskName = activeSubtask.Name;
+                                        subtaskName = RTLHelper.FixForScreenReader(activeSubtask.Name);
                                     }
 
                                     if (!string.IsNullOrEmpty(subtaskName))
@@ -260,10 +260,10 @@ namespace AccessibilityMod.UI
                 }
                 
                 // Add name
-                string name = subtask.LocalizedName;
+                string name = RTLHelper.FixForScreenReader(subtask.LocalizedName);
                 if (string.IsNullOrEmpty(name))
                 {
-                    name = subtask.Name;
+                    name = RTLHelper.FixForScreenReader(subtask.Name);
                 }
 
                 if (!string.IsNullOrEmpty(name))

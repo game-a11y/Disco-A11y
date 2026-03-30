@@ -11,6 +11,7 @@ using Il2Cpp;
 using Il2CppPagesSystem;
 using Il2CppTMPro;
 using AccessibilityMod.Inventory;
+using AccessibilityMod.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -566,7 +567,7 @@ namespace AccessibilityMod.Patches
                 if (effect == null) return null;
 
                 // Try using the EffectName method which should format it properly
-                string effectName = effect.EffectName(editor: false, withColor: false, revertTagsForRTL: false, revertFormatForRTL: false);
+                string effectName = RTLHelper.FixForScreenReader(effect.EffectName(editor: false, withColor: false, revertTagsForRTL: false, revertFormatForRTL: false));
                 if (!string.IsNullOrEmpty(effectName))
                 {
                     return effectName;
@@ -580,12 +581,12 @@ namespace AccessibilityMod.Patches
                 // Try to get skill name first
                 if (effect.skillType != Il2CppSunshine.Metric.SkillType.NONE)
                 {
-                    statName = effect.skillType.ToString();
+                    statName = RTLHelper.FixForScreenReader(effect.skillType.ToString());
                 }
                 // Otherwise try ability name
                 else if (effect.abilityType != Il2CppSunshine.Metric.AbilityType.Error)
                 {
-                    statName = effect.abilityType.ToString();
+                    statName = RTLHelper.FixForScreenReader(effect.abilityType.ToString());
                 }
 
                 if (!string.IsNullOrEmpty(statName))
@@ -620,7 +621,7 @@ namespace AccessibilityMod.Patches
                     var propertiesComp = tooltip.properties;
                     if (propertiesComp != null && !string.IsNullOrEmpty(propertiesComp.text))
                     {
-                        ParseEffectLines(propertiesComp.text, effects);
+                        ParseEffectLines(RTLHelper.FixForScreenReader(propertiesComp.text), effects);
                         if (effects.Count > 0) return new List<string>(effects);
                     }
 
@@ -633,10 +634,11 @@ namespace AccessibilityMod.Patches
                             if (textComp != null && !string.IsNullOrEmpty(textComp.text))
                             {
                                 // Look for text containing skill effect patterns or special effect patterns
-                                if (Regex.IsMatch(textComp.text, @"[+-]\d+\s+\w+") ||
-                                    Regex.IsMatch(textComp.text, @"Equip th(is|ese)"))
+                                string fixedText = RTLHelper.FixForScreenReader(textComp.text);
+                                if (Regex.IsMatch(fixedText, @"[+-]\d+\s+\w+") ||
+                                    Regex.IsMatch(fixedText, @"Equip th(is|ese)"))
                                 {
-                                    ParseEffectLines(textComp.text, effects);
+                                    ParseEffectLines(fixedText, effects);
                                     if (effects.Count > 0) return new List<string>(effects);
                                 }
                             }
