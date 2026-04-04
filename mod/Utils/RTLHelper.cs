@@ -107,6 +107,12 @@ namespace AccessibilityMod.Utils
             }
             string result = string.Join("\n", lines);
 
+            // Fix bidi segment swap for hyphenated numbers. I2's bidi processing
+            // sometimes swaps the order of digit groups around hyphens (10-4 → 4-10)
+            // when the groups have different lengths. Our reverse + re-reverse can't
+            // fix this because the operations cancel out. Detect and swap back.
+            result = FixSwappedHyphenatedNumbers(result);
+
             if (UI.TextExtractor.DiagnosticLogging)
             {
                 string before = text.Length > 30 ? text.Substring(0, 30) + "..." : text;
@@ -365,11 +371,11 @@ namespace AccessibilityMod.Utils
         }
 
         /// <summary>
-        /// Fix reversed connected-number sequences in TMP logical-order Arabic text.
-        /// TMP's RTL mode reverses digit runs that contain connectors (0.90 → 09.0,
-        /// 10-10 → 01-01, 10/10 → 01/01) but leaves plain integers alone (14 stays 14).
-        /// Runs can start with a leading connector (TMP reverses 0.50 → 05.0, where
-        /// the period moves). Only runs containing at least one connector are reversed.
+        /// Fix reversed digit sequences in TMP logical-order Arabic text.
+        /// TMP's RTL mode reverses ALL embedded number sequences — both plain
+        /// integers (14 → 41, 57 → 75) and connected numbers (0.90 → 09.0,
+        /// 10-10 → 01-01). Runs can start with a leading connector (TMP reverses
+        /// 0.50 → 05.0). Trailing connectors are NOT consumed (sentence periods).
         /// </summary>
         private static string FixReversedNumbers(string text)
         {
@@ -400,30 +406,9 @@ namespace AccessibilityMod.Utils
                             break;
                         }
                     }
-
-                    // Only reverse runs that contain a connector — TMP reverses
-                    // connected numbers (0.90, 10-10) but not plain integers (14)
-                    bool hasConnector = false;
-                    for (int k = start; k < i; k++)
-                    {
-                        if (IsNumberConnector(text[k]))
-                        {
-                            hasConnector = true;
-                            break;
-                        }
-                    }
-
-                    if (hasConnector)
-                    {
-                        for (int j = i - 1; j >= start; j--)
-                            sb.Append(text[j]);
-                    }
-                    else
-                    {
-                        // Plain integer — leave unchanged
-                        for (int j = start; j < i; j++)
-                            sb.Append(text[j]);
-                    }
+                    // Reverse the digit run
+                    for (int j = i - 1; j >= start; j--)
+                        sb.Append(text[j]);
                 }
                 else
                 {
@@ -444,6 +429,25 @@ namespace AccessibilityMod.Utils
         private static bool IsNumberConnector(char c)
         {
             return c == '.' || c == '-' || c == ':' || c == '/';
+        }
+
+        /// <summary>
+        /// Fix bidi segment swap for hyphenated numbers in I2-reversed text.
+        /// I2's bidi processing sometimes swaps digit groups around hyphens when
+        /// they have different lengths (10-4 → 4-10). This detects the pattern
+        /// (shorter group before hyphen, longer after) and swaps them back.
+        /// Equal-length groups (12-24, 08-06) are left alone — they're correct.
+        /// </summary>
+        private static string FixSwappedHyphenatedNumbers(string text)
+        {
+            return Regex.Replace(text, @"(\d+)-(\d+)", match =>
+            {
+                string left = match.Groups[1].Value;
+                string right = match.Groups[2].Value;
+                if (left.Length < right.Length)
+                    return right + "-" + left;
+                return match.Value;
+            });
         }
 
         /// <summary>
