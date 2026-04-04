@@ -11,14 +11,13 @@ You can find the game on [Steam](https://store.steampowered.com/app/632470/Disco
 ## Installation
 
 1. **Install Disco Elysium** (tested with the Steam version)
-2. **Install MelonLoader** (included with this mod package)
-   - It should prompt you to install in the Disco Elysium folder
-   - You might need to use NVDA object navigation
-3. **Copy the mod DLL**
-   - Once MelonLoader is installed, you should have a `Mods` folder inside your Disco Elysium folder
-   - Copy `Accessibility Mod.DLL` to this folder
-4. **Copy required DLLs**
-   - Copy `tolk.dll` and the `NVDA controller client` into the main Disco Elysium folder (above the Mods folder)
+2. **Install MelonLoader** from [melonwiki.xyz](https://melonwiki.xyz/)
+   - Run the installer and point it at your Disco Elysium folder
+   - You might need to use NVDA object navigation to interact with the installer
+3. **Extract the mod release package** into your Disco Elysium folder
+   - `AccessibilityMod.dll` goes into the `Mods` folder
+   - `Tolk.dll` and `nvdaControllerClient64.dll` go into the main Disco Elysium folder
+   - `AccessibilityMod_Waypoints.cfg` goes into the `UserData` folder (contains community-contributed waypoints for the first area)
 
 ## How to Use
 
@@ -48,13 +47,31 @@ Once in-game, the following keyboard commands are available:
 
 | Key | Function |
 |-----|----------|
-| `Ctrl + [` | Focus waypoint list |
+| `Ctrl + [` | Toggle waypoint mode on/off |
 | `Alt + [` | Create waypoint at current position |
 | `Alt + ]` | Delete current waypoint |
 | `Enter` | Confirm waypoint name (during creation) |
 | `Escape` | Cancel waypoint creation |
 
-*Note: When waypoints are focused, `.`, `Shift + .`, and `,` work with waypoints instead of objects.*
+During waypoint creation, after naming you'll be prompted to select a category:
+
+| Key | Function |
+|-----|----------|
+| `1` | Assign NPC category |
+| `2` | Assign Location category |
+| `3` or `Enter` | Assign General category (default) |
+| `Escape` | Cancel waypoint creation |
+
+While in waypoint mode:
+
+| Key | Function |
+|-----|----------|
+| `[` | Filter to NPC waypoints |
+| `]` | Filter to Location waypoints |
+| `=` | Clear filter (show all waypoints) |
+| `.` | Cycle forward within waypoints |
+| `Shift + .` | Cycle backward within waypoints |
+| `,` | Navigate to selected waypoint |
 
 #### Character Information
 

@@ -5,6 +5,7 @@ disco/
 *.pdb
 mod/bin/
 mod/obj/
+release/
 
 # Visual Studio solution files
 *.sln
